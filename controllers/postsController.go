@@ -56,3 +56,41 @@ func PostsShow(c *gin.Context) {
 	})
 
 }
+
+func PostsUpdate(c *gin.Context) {
+	// get the id off the url
+	id := c.Param("id")
+
+	// get the data off req body
+	var body struct {
+		Body  string
+		Title string
+	}
+
+	c.Bind(&body)
+
+	// find the post we're updating
+	var post models.Post
+	initializers.DB.First(&post, id)
+
+	// update it
+	initializers.DB.Model(&post).Updates(models.Post{
+		Title: body.Title, Body: body.Body,
+	})
+
+	// respond with it
+	c.JSON(200, gin.H{
+		"post": post,
+	})
+}
+
+func PostsDelete(c *gin.Context) {
+	// get the id off the url
+	id := c.Param("id")
+
+	// delete the post
+	initializers.DB.Delete(&models.Post{}, id)
+
+	// respond
+	c.Status(200)
+}
